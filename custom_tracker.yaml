@@ -1,0 +1,13 @@
+tracker_type: bytetrack
+track_high_thresh: 0.4
+track_low_thresh: 0.1
+new_track_thresh: 0.5
+track_buffer: 60       # Наша пам'ять на 60 кадрів
+match_thresh: 0.7      # Наш поблажливий поріг
+
+# === Технічні параметри для сумісності з новими версіями Ultralytics ===
+gmc_method: sparseOptFlow
+proximity_thresh: 0.5
+appearance_thresh: 0.25
+with_reid: False
+fuse_score: False

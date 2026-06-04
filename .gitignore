@@ -1,4 +1,12 @@
+# Python
 .venv/
 __pycache__/
 .DS_Store
+
+# Machine Learning models
+*.pt
+*.mlpackage/
+
+# Other files
 video.mp4
+.env

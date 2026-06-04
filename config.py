@@ -1,28 +1,30 @@
-class Config:
-    """
-    Централізована конфігурація проєкту.
-    """
-    # === Шляхи ===
-    VIDEO_PATH = "video.mp4" # або 0 для камери
-    MODEL_PROTO = 'MobileNetSSD_deploy.prototxt'
-    MODEL_WEIGHTS = 'MobileNetSSD_deploy.caffemodel'
+import numpy as np
 
-    # === Зони та Лінії ===
-    ZONE_TOP = 115       # Верхня межа (Y min)
-    ZONE_BOTTOM = 300    # Нижня межа (Y max)
-    LINE_POSITION = 350  # Лінія підрахунку (X)
+class Config:
+    """Централізована конфігурація проєкту."""
+    
+    VIDEO_PATH = "tcp://raspberrypi.local:8888"
+    YOLO_MODEL = "yolov8m.mlpackage" # CoreML формат
+
+    # === Полігон дороги (Polygon ROI) ===
+    ROAD_POLYGON = np.array([
+        [0, 170],     # Верхній лівий край
+        [640, 170],   # Верхній правий край
+        [640, 340],   # Нижній правий край
+        [0, 340]      # Нижній лівий край
+    ], np.int32)
+
+    LINE_POSITION = 380  # Лінія підрахунку по осі X
 
     # === Параметри ===
-    CONFIDENCE_THRESHOLD = 0.20
+    CONFIDENCE_THRESHOLD = 0.25
     USE_CLAHE = False
     FRAME_WIDTH = 640
     FRAME_HEIGHT = 360
 
-    # === Класи ===
-    ALL_CLASSES = ["background", "aeroplane", "bicycle", "bird", "boat",
-                   "bottle", "bus", "car", "cat", "chair", "cow", "diningtable",
-                   "dog", "horse", "motorbike", "person", "pottedplant", "sheep",
-                   "sofa", "train", "tvmonitor"]
+    # Класи: 0 (пішохід), 2 (авто), 3 (мотоцикл), 5 (автобус), 7 (вантажівка)
+    TARGET_CLASSES = [0, 2, 3, 5, 7]
 
-    # Фільтр об'єктів (тільки транспорт)
-    VEHICLES = ["car", "bus", "motorbike", "train", "bicycle"]
+    # === Параметри завантаженості ===
+    FREE_FLOW_LIMIT = 10 # До 10 авто/хв - вільно
+    JAM_LIMIT = 25 # Від 10 до 25 - ускладнено, більше - затор
