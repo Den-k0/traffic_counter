@@ -42,7 +42,10 @@ select = [
     "I",  # isort
     "N",  # PEP8 naming conventions
 ]
-ignore = ["I001", "E731"]
+ignore = ["I001", "E731", "E741"]
+
+[tool.ruff.lint.per-file-ignores]
+"main.py" = ["E402"]
 
 [tool.ruff.lint.flake8-quotes]
 inline-quotes = "double"

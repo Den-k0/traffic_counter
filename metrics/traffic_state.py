@@ -6,12 +6,17 @@ class TrafficStateTracker:
     """Відповідає за підрахунок інтенсивності трафіку у ковзному вікні.
 
     Args:
-        free_limit (int): Порог для стану FREE.
-        jam_limit (int): Порог для стану JAM/HEAVY.
-        window_seconds (int): Розмір вікна у секундах для підрахунку інтенсивності.
+        free_limit (int): Поріг для стану FREE.
+        jam_limit (int): Поріг для стану JAM/HEAVY.
+        window_seconds (int): Вікно для підрахунку інтенсивності.
     """
 
-    def __init__(self, free_limit: int = 10, jam_limit: int = 25, window_seconds: int = 60) -> None:
+    def __init__(
+        self,
+        free_limit: int = 10,
+        jam_limit: int = 25,
+        window_seconds: int = 60,
+    ) -> None:
         self.crossing_timestamps: deque[float] = deque()
         self.free_limit: int = free_limit
         self.jam_limit: int = jam_limit
@@ -29,7 +34,11 @@ class TrafficStateTracker:
         current_time = time.time()
 
         # Швидке очищення O(1): видаляємо старі записи зліва (найстаріші)
-        while self.crossing_timestamps and current_time - self.crossing_timestamps[0] > self.window_seconds:
+        while (
+            self.crossing_timestamps
+            and current_time - self.crossing_timestamps[0]
+            > self.window_seconds
+        ):
             self.crossing_timestamps.popleft()
 
         intensity = len(self.crossing_timestamps)
