@@ -1,4 +1,6 @@
 import cv2
+import numpy as np
+from typing import Any
 from config import Config
 
 
@@ -6,29 +8,46 @@ class Visualizer:
     """Допоміжні методи рендерингу для UI/HUD."""
 
     @staticmethod
-    def draw_text_with_outline(img, text, pos, font_scale, text_color, thickness=2):
+    def draw_text_with_outline(
+        img: np.ndarray, 
+        text: str, 
+        pos: tuple[int, int], 
+        font_scale: float, 
+        text_color: tuple[int, int, int], 
+        thickness: int = 2
+    ) -> None:
         """Малює текст з чорним контуром для кращої читабельності."""
         cv2.putText(img, text, pos, cv2.FONT_HERSHEY_SIMPLEX, font_scale, (0, 0, 0), thickness + 3)
         cv2.putText(img, text, pos, cv2.FONT_HERSHEY_SIMPLEX, font_scale, text_color, thickness)
 
     @staticmethod
-    def render(frame, events, total_objects, intensity, state, state_color, line_color):
+    def render(
+        frame: np.ndarray, 
+        events: list[dict[str, Any]], 
+        total_objects: int, 
+        intensity: int, 
+        state: str, 
+        state_color: tuple[int, int, int], 
+        line_color: tuple[int, int, int]
+    ) -> np.ndarray:
         """Накладає ROI, лінію підрахунку, bounding box'и та HUD на кадр.
 
         Args:
-            frame: OpenCV image.
-            events: список подій трекінгу ({id,label,bbox,centroid}).
-            total_objects: загальна кількість за сесію.
-            intensity/state/state_color: поточні метрики трафіку.
-            line_color: колір лінії (змінюється при перетині).
+            frame (np.ndarray): OpenCV image.
+            events (list[dict[str, Any]]): список подій трекінгу ({id,label,bbox,centroid}).
+            total_objects (int): загальна кількість за сесію.
+            intensity (int): інтенсивність (об'єктів за хвилину).
+            state (str): поточний стан трафіку.
+            state_color (tuple[int, int, int]): колір тексту стану.
+            line_color (tuple[int, int, int]): колір лінії (змінюється при перетині).
         Returns:
-            frame з накладеним UI.
+            np.ndarray: frame з накладеним UI.
         """
         h, _ = frame.shape[:2]
 
         # Статичні зони
         cv2.polylines(frame, [Config.ROAD_POLYGON], isClosed=True, color=(255, 0, 0), thickness=2)
-        cv2.line(frame, (Config.LINE_POSITION, 0), (Config.LINE_POSITION, h), line_color, 3 if line_color == (0,0,255) else 2)
+        cv2.line(frame, (Config.LINE_POSITION, 0), (Config.LINE_POSITION, h), line_color, 3 if line_color == (0, 0, 255) else 2)
 
         # Динамічні об'єкти (з tracking events)
         for ev in events:

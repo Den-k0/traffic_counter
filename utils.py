@@ -1,5 +1,6 @@
 import cv2
 import logging
+import numpy as np
 
 logger = logging.getLogger("TrafficAnalyzer.Utils")
 
@@ -8,7 +9,7 @@ class ImageUtils:
     """Утилітний клас для операцій над зображенням."""
 
     @staticmethod
-    def apply_clahe(image):
+    def apply_clahe(image: np.ndarray) -> np.ndarray:
         """Застосовує CLAHE до L-каналу LAB-простору для покращення контрасту.
 
         Повертає оброблене зображення або оригінал у випадку помилки.

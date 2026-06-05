@@ -1,6 +1,8 @@
 import cv2
 import logging
+import numpy as np
 from collections import OrderedDict
+from typing import Any
 
 logger = logging.getLogger("TrafficAnalyzer.Counter")
 
@@ -9,35 +11,35 @@ class LineCounter:
     """Простий лічильник перетинів по лінії.
 
     Args:
-        polygon (ndarray): Полігон ROI (numpy array of points).
+        polygon (np.ndarray): Полігон ROI (numpy array of points).
         line_position (int): X-позиція лінії підрахунку.
         max_cache_size (int): Максимальний розмір кеша зареєстрованих ID.
     """
 
-    def __init__(self, polygon, line_position, max_cache_size=1000):
-        self.polygon = polygon
-        self.line_position = line_position
+    def __init__(self, polygon: np.ndarray, line_position: int, max_cache_size: int = 1000) -> None:
+        self.polygon: np.ndarray = polygon
+        self.line_position: int = line_position
 
-        self.total_objects = 0
-        self.counted_ids = OrderedDict()  # черга для безпечного очищення
-        self.max_cache_size = max_cache_size
+        self.total_objects: int = 0
+        self.counted_ids: OrderedDict[int, bool] = OrderedDict()  # черга для безпечного очищення
+        self.max_cache_size: int = max_cache_size
 
-        self.previous_centroids = {}
-        self.line_color = (0, 255, 255)
+        self.previous_centroids: dict[int, tuple[int, int]] = {}
+        self.line_color: tuple[int, int, int] = (0, 255, 255)
 
-    def process_tracks(self, boxes, class_names):
+    def process_tracks(self, boxes: Any, class_names: dict[int, str]) -> list[dict[str, Any]]:
         """Обробляє результати трекера та повертає події для рендерингу.
 
         Args:
-            boxes: Об'єкт з `boxes` від Ultralytics track API.
-            class_names: Список імен класів моделі.
+            boxes (Any): Об'єкт з `boxes` від Ultralytics track API.
+            class_names (dict[int, str]): Словник імен класів моделі.
 
         Returns:
-            list: Список подій виду {id, label, bbox, centroid}.
+            list[dict[str, Any]]: Список подій виду {id, label, bbox, centroid}.
         """
-        current_centroids = {}
+        current_centroids: dict[int, tuple[int, int]] = {}
         self.line_color = (0, 255, 255)
-        events = []
+        events: list[dict[str, Any]] = []
 
         for box in boxes:
             if box.id is None:
@@ -69,7 +71,7 @@ class LineCounter:
 
         self.previous_centroids = current_centroids.copy()
 
-        # БЕЗПЕЧНЕ очищення: видаляємо тільки найстаріші ID
+        # БЕЗПЕЧНЕ очищення: видалення тільки найстаріших ID
         while len(self.counted_ids) > self.max_cache_size:
             self.counted_ids.popitem(last=False)
 

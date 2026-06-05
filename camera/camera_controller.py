@@ -1,6 +1,7 @@
 import time
 import paramiko
 import logging
+from typing import Optional, Type, Any
 from config import Config
 
 logger = logging.getLogger("TrafficAnalyzer.Camera")
@@ -15,15 +16,15 @@ class SSHCameraController:
         max_retries (int): Кількість спроб підключення.
     """
 
-    def __init__(self, ip, user, password, max_retries=3):
-        self.ip = ip
-        self.user = user
-        self.password = password
-        self.max_retries = max_retries
-        self.ssh = None
-        self.stream_url = f"tcp://{self.ip}:{Config.STREAM_PORT}"
+    def __init__(self, ip: str, user: str, password: str, max_retries: int = 3) -> None:
+        self.ip: str = ip
+        self.user: str = user
+        self.password: str = password
+        self.max_retries: int = max_retries
+        self.ssh: Optional[paramiko.SSHClient] = None
+        self.stream_url: str = f"tcp://{self.ip}:{Config.STREAM_PORT}"
 
-    def __enter__(self):
+    def __enter__(self) -> "SSHCameraController":
         """Запускає стрім при вході в контекст. Бере на себе помилки запуску.
 
         Повертає себе як ресурс для використання в `with`.
@@ -32,7 +33,12 @@ class SSHCameraController:
             raise ConnectionError("Не вдалося запустити трансляцію з Raspberry Pi.")
         return self
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
+    def __exit__(
+        self, 
+        exc_type: Optional[Type[BaseException]], 
+        exc_val: Optional[BaseException], 
+        exc_tb: Optional[Any]
+    ) -> bool:
         """Гарантовано зупиняє стрім та закриває SSH з'єднання.
 
         Якщо під час роботи виникла помилка, логуватиме її та не подаватиме
@@ -43,7 +49,7 @@ class SSHCameraController:
             logger.error(f"Аварійне завершення роботи камери: {exc_val}")
         return False
 
-    def start_stream(self):
+    def start_stream(self) -> bool:
         """Спроба підключитися по SSH і запустити `rpicam-vid` на віддаленому хості.
 
         Повертає True при успіху або False після max_retries.
@@ -82,9 +88,11 @@ class SSHCameraController:
                 if attempt == self.max_retries:
                     logger.critical("Не вдалося запустити камеру після всіх спроб.")
                     return False
-                time.sleep(2) # Пауза перед наступною спробою
+                time.sleep(2)
+        
+        return False
 
-    def stop_stream(self):
+    def stop_stream(self) -> None:
         """Зупиняє процес на віддаленому хості та закриває SSH-з'єднання."""
         if self.ssh:
             logger.info("Вимкнення камери та закриття SSH...")
