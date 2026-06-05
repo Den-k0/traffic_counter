@@ -2,6 +2,7 @@
 .venv/
 __pycache__/
 .DS_Store
+.ruff_cache/
 
 # Machine Learning models
 *.pt

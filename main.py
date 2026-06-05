@@ -65,7 +65,7 @@ def process_video_stream(cap: VideoStream, model: YOLO, counter: LineCounter, tr
             )
 
             # Відображення кадру
-            cv2.imshow("Traffic Analyzer", frame)
+            cv2.imshow("Traffic Counter", frame)
             
             # Вихід за натисканням 'q' або при отриманні сигналу зупинки
             if cv2.waitKey(1) & 0xFF == ord('q'):
