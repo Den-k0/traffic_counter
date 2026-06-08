@@ -8,11 +8,11 @@ from imutils.video import VideoStream
 load_dotenv()
 
 from config import Config
-from utils import ImageUtils
+from camera.image_utils import ImageUtils
 from camera.camera_controller import SSHCameraController
-from tracking.line_counter import LineCounter
-from metrics.traffic_state import TrafficStateTracker
-from ui.overlay import Visualizer
+from camera.line_counter import LineCounter
+from camera.traffic_state import TrafficStateTracker
+from camera.overlay import Visualizer
 
 # Налаштування логування для всіх модулів
 logging.basicConfig(

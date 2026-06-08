@@ -2,11 +2,11 @@ import cv2
 import logging
 import numpy as np
 
-logger = logging.getLogger("TrafficAnalyzer.Utils")
+logger = logging.getLogger("TrafficAnalyzer.Camera")
 
 
 class ImageUtils:
-    """Утилітний клас для операцій над зображенням."""
+    """Утиліти обробки зображень для камери."""
 
     @staticmethod
     def apply_clahe(image: np.ndarray) -> np.ndarray:
