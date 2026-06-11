@@ -1,14 +1,21 @@
 import time
 from collections import deque
+from web.models import TrafficStatus
 
 
 class TrafficStateTracker:
-    """Відповідає за підрахунок інтенсивності трафіку у ковзному вікні.
+    """Аналізатор інтенсивності трафіку за
+    допомогою методу ковзного вікна (Sliding Window).
+
+    Зберігає таймстемпи перетинів та видаляє
+    старі дані для підрахунку "машин за хвилину".
 
     Args:
-        free_limit (int): Поріг для стану FREE.
-        jam_limit (int): Поріг для стану JAM/HEAVY.
-        window_seconds (int): Вікно для підрахунку інтенсивності.
+        free_limit (int): Верхня межа кількості авто
+                          для стану FREE (Вільна дорога).
+        jam_limit (int): Верхня межа кількості авто
+                         для стану NORMAL. Вище - HEAVY (Затор).
+        window_seconds (int): Розмір ковзного вікна в секундах (наприклад, 60).
     """
 
     def __init__(
@@ -44,13 +51,13 @@ class TrafficStateTracker:
         intensity = len(self.crossing_timestamps)
 
         if intensity <= self.free_limit:
-            state = "FREE"
+            state = TrafficStatus.FREE
             color = (0, 255, 0)
         elif intensity <= self.jam_limit:
-            state = "NORMAL"
+            state = TrafficStatus.NORMAL
             color = (0, 255, 255)
         else:
-            state = "HEAVY"
+            state = TrafficStatus.HEAVY
             color = (0, 0, 255)
 
         return intensity, state, color

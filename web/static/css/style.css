@@ -1,0 +1,6 @@
+body { background-color: #121212; color: #ffffff; padding-bottom: 50px; }
+.video-container { text-align: center; margin-bottom: 30px; }
+.chart-container { background-color: #1e1e1e; padding: 25px; border-radius: 12px; border: 1px solid #333; }
+.state-badge { font-size: 1.1rem; padding: 6px 16px; border-radius: 6px; font-weight: bold; border: 1px solid currentColor; display: inline-block;}
+#time-filters .btn-outline-secondary { color: #aaa; border-color: #444; }
+#time-filters .btn-outline-secondary:hover { background-color: #333; border-color: #555; color: #fff;}

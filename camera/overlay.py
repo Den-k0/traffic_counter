@@ -1,11 +1,14 @@
 import cv2
 import numpy as np
 from typing import Any
-from config import Config
+from config import GeometryConfig
 
 
 class Visualizer:
-    """Допоміжні методи рендерингу для UI/HUD."""
+    """Утиліта для накладання графіки (HUD) на кадри відеопотоку.
+    
+    Малює Bounding Boxes, ID об'єктів, полігон дороги та контрольну лінію.
+    """
 
     @staticmethod
     def draw_text_with_outline(
@@ -66,15 +69,15 @@ class Visualizer:
         # Статичні зони
         cv2.polylines(
             frame,
-            [Config.ROAD_POLYGON],
+            [GeometryConfig.ROAD_POLYGON],
             isClosed=True,
             color=(255, 0, 0),
             thickness=2,
         )
         cv2.line(
             frame,
-            (Config.LINE_POSITION, 0),
-            (Config.LINE_POSITION, h),
+            (GeometryConfig.LINE_POSITION, 0),
+            (GeometryConfig.LINE_POSITION, h),
             line_color,
             3 if line_color == (0, 0, 255) else 2,
         )
@@ -90,28 +93,5 @@ class Visualizer:
             Visualizer.draw_text_with_outline(
                 frame, label, (x1, y1 - 10), 0.5, (0, 255, 0), 1
             )
-
-        # UI Статистика
-        Visualizer.draw_text_with_outline(
-            frame,
-            f"Traffic State: {state}",
-            (20, 30),
-            0.9,
-            state_color,
-        )
-        Visualizer.draw_text_with_outline(
-            frame,
-            f"Intensity: {intensity}/min",
-            (20, 60),
-            0.7,
-            (255, 255, 255),
-        )
-        Visualizer.draw_text_with_outline(
-            frame,
-            f"Total objects: {total_objects}",
-            (20, 90),
-            0.7,
-            (255, 255, 255),
-        )
 
         return frame

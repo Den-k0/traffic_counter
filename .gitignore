@@ -4,10 +4,22 @@ __pycache__/
 .DS_Store
 .ruff_cache/
 
+# Databases
+*.db
+*.sqlite3
+
 # Machine Learning models
 *.pt
 *.mlpackage/
 
+# Logs and Environment
+traffic.log
+*.log
+.env
+
+# IDEs
+.idea/
+.vscode/
+
 # Other files
 video.mp4
-.env

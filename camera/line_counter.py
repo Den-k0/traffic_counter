@@ -8,12 +8,17 @@ logger = logging.getLogger("TrafficAnalyzer.Counter")
 
 
 class LineCounter:
-    """Простий лічильник перетинів по лінії.
+    """Алгоритм підрахунку перетинів контрольної лінії об'єктами.
+
+    Аналізує треки від YOLO, перевіряє їх на входження у зону інтересу (ROI)
+    та реєструє факт перетину заданої X-координати.
 
     Args:
-        polygon (np.ndarray): Полігон ROI (numpy array of points).
-        line_position (int): X-позиція лінії підрахунку.
-        max_cache_size (int): Максимальний розмір кеша зареєстрованих ID.
+        polygon (np.ndarray): Полігон ROI (дороги), що ігнорує зайвий фон.
+        line_position (int): X-координата вертикальної лінії підрахунку.
+        max_cache_size (int, optional): Розмір кеша унікальних ID об'єктів
+                                        для запобігання дублюванню.
+                                        За замовчуванням 1000.
     """
 
     def __init__(
@@ -36,20 +41,26 @@ class LineCounter:
 
     def process_tracks(
         self, boxes: Any, class_names: dict[int, str]
-    ) -> list[dict[str, Any]]:
-        """Обробляє результати трекера та повертає події для рендерингу.
+    ) -> tuple[list[dict[str, Any]], list[str]]:
+        """Обробляє результати трекера YOLO для поточного кадру.
 
         Args:
-            boxes (Any): Об'єкт з `boxes` від Ultralytics track API.
-            class_names (dict[int, str]): Словник імен класів моделі.
+            boxes (Any): Об'єкт Ultralytics із результатами
+                         детекції та трекінгу.
+            class_names (dict[int, str]): Словник відповідності
+                                          ID класів та їх назв.
 
         Returns:
-            list[dict[str, Any]]: Список подій виду {id, label,
-                                  bbox, centroid}.
+            tuple:
+                - list[dict]: Список подій трекінгу
+                              (координати, ID, label) для рендеру.
+                - list[str]: Список назв класів об'єктів,
+                             які щойно перетнули лінію.
         """
         current_centroids: dict[int, tuple[int, int]] = {}
         self.line_color = (0, 255, 255)
         events: list[dict[str, Any]] = []
+        new_crossings: list[str] = []
 
         for box in boxes:
             if box.id is None:
@@ -92,6 +103,9 @@ class LineCounter:
                         self.total_objects += 1
                         self.counted_ids[track_id] = True
                         self.line_color = (0, 0, 255)
+
+                        new_crossings.append(label)
+
                         logger.info(
                             f"Зафіксовано: ID {track_id} | Тип: {label} | "
                             f"Всього: {self.total_objects}"
@@ -99,8 +113,7 @@ class LineCounter:
 
         self.previous_centroids = current_centroids.copy()
 
-        # БЕЗПЕЧНЕ очищення: видалення тільки найстаріших ID
         while len(self.counted_ids) > self.max_cache_size:
             self.counted_ids.popitem(last=False)
 
-        return events
+        return events, new_crossings
