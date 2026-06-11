@@ -6,11 +6,12 @@ from web.models import TrafficLog
 
 logger = logging.getLogger("TrafficAnalyzer.Worker")
 
+
 def db_writer_worker() -> None:
     """Ізольований фоновий потік для пакетного запису в базу даних.
-    
-    Читає події з черги `global_state.log_queue` та виконує масовий (batch) 
-    insert у базу даних SQLite. Гарантує, що операції I/O з базою не блокують 
+
+    Читає події з черги `global_state.log_queue` та виконує масовий (batch)
+    insert у базу даних SQLite. Гарантує, що операції I/O з базою не блокують
     комп'ютерний зір.
     """
     logger.info("Фоновий потік БД запущено.")
@@ -29,7 +30,10 @@ def db_writer_worker() -> None:
             with SessionLocal() as db:
                 try:
                     for obj_class, traffic_state in batch:
-                        db.add(TrafficLog(object_class=obj_class, traffic_state=traffic_state))
+                        db.add(TrafficLog(
+                            object_class=obj_class,
+                            traffic_state=traffic_state)
+                        )
                     db.commit()
                 except Exception as e:
                     logger.error(f"Помилка фонового запису в БД: {e}")

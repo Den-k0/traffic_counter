@@ -14,9 +14,10 @@ from config import AppConfig
 
 router = APIRouter()
 
+
 class ConnectionManager:
     """Менеджер для керування активними WebSocket з'єднаннями."""
-    
+
     def __init__(self) -> None:
         """Ініціалізує список активних клієнтів."""
         self.active_connections: List[WebSocket] = []
@@ -31,7 +32,9 @@ class ConnectionManager:
         self.active_connections.remove(websocket)
 
     async def broadcast(self, data: dict) -> None:
-        """Розсилає JSON повідомлення всім підключеним клієнтам (Broadcast Pattern)."""
+        """Розсилає JSON повідомлення всім
+        підключеним клієнтам (Broadcast Pattern).
+        """
         for connection in self.active_connections:
             await connection.send_json(data)
 
@@ -39,8 +42,8 @@ manager = ConnectionManager()
 
 async def stats_broadcaster() -> None:
     """Асинхронне фонове завдання для розсилки телеметрії.
-    
-    Раз на секунду зчитує глобальний стан, генерує часові мітки для графіка 
+
+    Раз на секунду зчитує глобальний стан, генерує часові мітки для графіка
     і розсилає ці дані всім WebSocket клієнтам.
     """
     while global_state.is_running:
@@ -81,7 +84,7 @@ async def websocket_stats(websocket: WebSocket) -> None:
 @router.get("/video_feed")
 async def video_feed(request: Request) -> StreamingResponse:
     """Ендпоінт для стрімінгу обробленого відео (MJPEG).
-    
+
     Реєструє підключення для оптимізації рендеру відео на бекенді.
     Якщо клієнтів немає — рендер та кодування кадрів вимикається.
     """
@@ -95,15 +98,26 @@ async def video_feed(request: Request) -> StreamingResponse:
                 current_frame = global_state.get_frame()
                 if current_frame and current_frame != last_sent_frame:
                     last_sent_frame = current_frame
-                    yield (b"--frame\r\nContent-Type: image/jpeg\r\n\r\n" + last_sent_frame + b"\r\n")
+                    yield (
+                        b"--frame\r\nContent-Type: image/jpeg\r\n\r\n"
+                        + last_sent_frame
+                        + b"\r\n"
+                    )
                 await asyncio.sleep(0.03)
         finally:
             global_state.decrement_viewers()
-            
-    return StreamingResponse(frame_generator(), media_type="multipart/x-mixed-replace; boundary=frame")
+
+    return StreamingResponse(
+        frame_generator(),
+        media_type="multipart/x-mixed-replace; boundary=frame"
+    )
 
 @router.get("/api/history", response_model=list[HistoricalTrafficData])
-async def get_historical_data(interval: str, obj_type: str = "all", db: Session = Depends(get_db)):
+async def get_historical_data(
+    interval: str,
+    obj_type: str = "all",
+    db: Session = Depends(get_db)
+):
     """REST API ендпоінт для отримання історичних даних для графіку.
 
     Args:
@@ -114,4 +128,6 @@ async def get_historical_data(interval: str, obj_type: str = "all", db: Session 
     Returns:
         list[HistoricalTrafficData]: Список агрегованих точок даних.
     """
-    return HistoryService.get_historical_data(interval=interval, obj_type=obj_type, db=db)
+    return HistoryService.get_historical_data(
+        interval=interval, obj_type=obj_type, db=db
+    )

@@ -6,7 +6,7 @@ from config import GeometryConfig
 
 class Visualizer:
     """Утиліта для накладання графіки (HUD) на кадри відеопотоку.
-    
+
     Малює Bounding Boxes, ID об'єктів, полігон дороги та контрольну лінію.
     """
 

@@ -9,16 +9,16 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class EnvSettings(BaseSettings):
     """Схема валідації змінних оточення з файлу .env.
-    
+
     Гарантує (Fail-Fast), що застосунок не запуститься
     без обов'язкових облікових даних до Raspberry Pi.
     """
     model_config = SettingsConfigDict(
-        env_file=".env", 
-        env_file_encoding="utf-8", 
+        env_file=".env",
+        env_file_encoding="utf-8",
         extra="ignore"
     )
-    
+
     rpi_ip: str
     rpi_user: str
     rpi_pass: str

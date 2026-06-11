@@ -3,14 +3,17 @@ from datetime import datetime
 from pydantic import BaseModel, ConfigDict
 from web.models import TrafficStatus, ObjectType
 
+
 class TrafficLogBase(BaseModel):
     """Базова схема логування трафіку."""
     object_class: ObjectType
     traffic_state: TrafficStatus
 
+
 class TrafficLogCreate(TrafficLogBase):
     """Схема для створення нового запису."""
     pass
+
 
 class TrafficLogResponse(TrafficLogBase):
     """Схема відповіді API з деталями перетину."""
@@ -19,9 +22,10 @@ class TrafficLogResponse(TrafficLogBase):
 
     model_config = ConfigDict(from_attributes=True)
 
+
 class HistoricalTrafficData(BaseModel):
     """Схема агрегованих даних для побудови графіка на фронтенді.
-    
+
     Attributes:
         timestamp_group (str): Згрупована мітка часу
                                (наприклад, '14:00' або '15.06').

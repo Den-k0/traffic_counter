@@ -15,11 +15,11 @@ if __name__ == "__main__":
     logging.config.dictConfig(LOGGING_CONFIG)
     logger = logging.getLogger("TrafficAnalyzer")
     logger.info("🚀 Запуск сервера Traffic Counter...")
-    
+
     uvicorn.run(
-        "web.app:app", 
-        host="0.0.0.0", 
-        port=8000, 
-        reload=False, 
+        "web.app:app",
+        host="0.0.0.0",
+        port=8000,
+        reload=False,
         log_config=None
     )

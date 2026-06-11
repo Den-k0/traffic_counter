@@ -7,8 +7,8 @@ logger = logging.getLogger("TrafficAnalyzer.State")
 
 class VideoStreamState:
     """Клас для потокобезпечного керування глобальним станом застосунку.
-    
-    Відповідає за зберігання останнього кадру, бізнес-метрик трафіку 
+
+    Відповідає за зберігання останнього кадру, бізнес-метрик трафіку
     та керування чергою логів для запису в БД.
     """
     def __init__(self) -> None:
@@ -17,12 +17,12 @@ class VideoStreamState:
         self._total_objects: int = 0
         self._intensity: int = 0
         self._traffic_state: str = "FREE"
-        self._total_persons: int = 0      
-        self._total_transport: int = 0    
-        self._active_viewers: int = 0     
-        
+        self._total_persons: int = 0
+        self._total_transport: int = 0
+        self._active_viewers: int = 0
+
         self.is_running: bool = False
-        
+
         self._lock = threading.Lock()
         self.log_queue: queue.Queue = queue.Queue()
 
@@ -53,14 +53,20 @@ class VideoStreamState:
         """Реєструє нового глядача відеопотоку."""
         with self._lock:
             self._active_viewers += 1
-            logger.info(f"👥 Нове підключення до відеопотоку. Активних глядачів: {self._active_viewers}")
+            logger.info(
+                f"👥 Нове підключення до відеопотоку. "
+                f"Активних глядачів: {self._active_viewers}"
+            )
 
     def decrement_viewers(self) -> None:
         """Відміняє реєстрацію глядача відеопотоку."""
         with self._lock:
             if self._active_viewers > 0:
                 self._active_viewers -= 1
-            logger.info(f"👥 Відключення від відеопотоку. Активних глядачів: {self._active_viewers}")
+            logger.info(
+                f"👥 Відключення від відеопотоку. "
+                f"Активних глядачів: {self._active_viewers}"
+            )
 
     def has_viewers(self) -> bool:
         """Перевіряє, чи є активні глядачі.
@@ -71,7 +77,14 @@ class VideoStreamState:
         with self._lock:
             return self._active_viewers > 0
 
-    def update_stats(self, total: int, intensity: int, state: str, total_persons: int, total_transport: int) -> None:
+    def update_stats(
+        self,
+        total: int,
+        intensity: int,
+        state: str,
+        total_persons: int,
+        total_transport: int
+    ) -> None:
         """Потокобезпечно оновлює метрики трафіку.
 
         Args:
@@ -92,7 +105,8 @@ class VideoStreamState:
         """Потокобезпечно повертає поточну статистику.
 
         Returns:
-            dict: Словник з ключами total_objects, intensity, traffic_state, total_persons, total_transport.
+            dict: Словник з ключами total_objects, intensity,
+                  traffic_state, total_persons, total_transport.
         """
         with self._lock:
             return {

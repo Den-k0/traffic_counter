@@ -17,7 +17,8 @@ class SSHCameraController:
         ip (str): IP адреса Raspberry Pi у локальній мережі.
         user (str): SSH користувач.
         password (str): SSH пароль.
-        max_retries (int, optional): Кількість спроб підключення. За замовчуванням 3.
+        max_retries (int, optional): Кількість спроб підключення.
+                                     За замовчуванням 3.
     """
 
     def __init__(
@@ -98,7 +99,8 @@ class SSHCameraController:
                 cmd = (
                     f"nohup rpicam-vid -t 0 --framerate 20 "
                     f"--saturation 0 --inline --listen -o "
-                    f"tcp://0.0.0.0:{StreamConfig.STREAM_PORT} >/dev/null 2>&1 &"
+                    f"tcp://0.0.0.0:{StreamConfig.STREAM_PORT} "
+                    f">/dev/null 2>&1 &"
                 )
                 self.ssh.exec_command(cmd)
 
