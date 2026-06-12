@@ -49,7 +49,7 @@ class HistoryService:
             )
         elif interval == "hour":
             return (
-                now_local - timedelta(hours=24),
+                now_local - timedelta(hours=23),
                 timedelta(hours=1),
                 lambda dt: dt.strftime("%H:00"),
                 '%Y-%m-%d %H:00'
